@@ -44,10 +44,11 @@
 int main(int argc, char **argv)
 {
 	struct sockaddr_in   si_local, si_remote;
-	int                  s,i;
+	int                  s,i,j,interval;
 	int                  port;
 	size_t               slen;
 	char                 buf[BUFLEN];
+	interval = 70000;
 
 	slen     =   sizeof(si_remote);
 	if(argc!=2){
@@ -77,6 +78,16 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	int fd=open("/dev/console",O_NOCTTY);
+			ioctl(fd, KDSETLED,0);
+			ioctl(fd, KDSETLED,1);
+		 	usleep(interval);
+			ioctl(fd, KDSETLED,0);
+			ioctl(fd, KDSETLED,2);
+		 	usleep(interval);
+			ioctl(fd, KDSETLED,0);
+			ioctl(fd, KDSETLED,4);
+		 	usleep(interval);
+			ioctl(fd, KDSETLED,0);
 
 	while(1){
 		memset(buf, 0, sizeof(char)*BUFLEN);
@@ -90,16 +101,42 @@ int main(int argc, char **argv)
 			break;
 		}
 		else {
-	
-			
-			for(i=0; i<8; i++){
-				printf("%c", '0' + ((buf[0] & (1<<i))?1:0));
-			}
-			printf("\n", buf);
-			ioctl(fd, KDSETLED, 0);// выключить все
-			ioctl(fd, KDSETLED,7 );//включить все
-			ioctl(fd, KDSETLED,6); //NumLock==2,ScrollLock==1,CapsLock==4. Комбинируя сумму этих чисел можем вкючить те или инные диоды. В данном случае будут гореть только Num и Caps
 
+
+			printf("all off\n");
+			ioctl(fd, KDSETLED,0);
+
+
+			for(j=1; j<buf[0]; j++){
+				printf("BYTE %d\n",j);
+				for(i=0; i<8; i++){
+					ioctl(fd, KDSETLED, 0);
+					if(buf[j] & (1<<i)){
+						printf("ScrollLock ON\n");
+						ioctl(fd, KDSETLED, 1);
+					}else{
+						printf("NumLock ScrollLock on\n");
+						ioctl(fd, KDSETLED,3);
+					}
+
+				 	usleep(interval);
+					printf("all off\n");
+					ioctl(fd, KDSETLED, 0);// выключить все
+				 	usleep(interval);
+				}
+ 			}
+			printf("CapsLock on\n");
+			ioctl(fd, KDSETLED,4);
+		 	usleep(interval);
+			printf("all off\n");
+			ioctl(fd, KDSETLED,0);
+
+			printf("end of packet\n");
+			printf("\n");
+			//NumLock==2,
+			//ScrollLock==1,
+			//CapsLock==4. Комбинируя сумму этих чисел можем вкючить те или инные диоды. В данном случае будут гореть только Num и Caps
+			
 			//printf("Received packet from %s:%d\n", inet_ntoa(si_remote.sin_addr), ntohs(si_remote.sin_port));
 			//printf("Data: %s\n", buf);
 		}
