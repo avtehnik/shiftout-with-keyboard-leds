@@ -119,12 +119,22 @@ int main(int argc, char **argv) {
             exit(EXIT_FAILURE);
         }
         if (strstr(buf, ".quit.") != NULL) {
-            printf("\".quit.\" Received \n");
             printf("Exiting\n");
+            printf("\".quit.\" Received \n");
             break;
         } else {
+            printf("Data received %i ", buf[0] );
             for (j = 1; j < buf[0]; j++) {
                for (i = 0; i < 8; i++) {
+
+
+                if((buf[j] & (0x80 >> i))>0){
+			printf("1");
+		}else{
+			printf("0");
+		}
+
+
                     setDS((buf[j] & (0x80 >> i))>0);
                     usleep(interval);
                     setSH(1);
@@ -134,7 +144,10 @@ int main(int argc, char **argv) {
                     setDS(0);
                     usleep(interval);
                 }
+		printf(" ");
             }
+		printf("\n");
+
             usleep(interval);
             setST(1);
             usleep(interval);
