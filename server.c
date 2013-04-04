@@ -45,7 +45,7 @@
 int state;
 int fd ;
 void setSH(int i) {
-    //click
+    /* click */
     if (i == 1) {
         state = state ^ 1;
     } else {
@@ -55,7 +55,7 @@ void setSH(int i) {
 }
 
 void setST(int i) {
-    //out
+    /* out */
     if (i == 1) {
         state = state ^ 2;
     } else {
@@ -65,7 +65,7 @@ void setST(int i) {
 }
 
 void setDS(int i) {
-    //data
+   /* data */
     if (i == 1) {
         state = state ^ 4;
     } else {
@@ -76,8 +76,8 @@ void setDS(int i) {
 
 int main(int argc, char **argv) {
 
-    state = 0;
     struct sockaddr_in si_local, si_remote;
+    state = 0;
     int s, i, j, interval;
     int port;
     size_t slen;
@@ -128,12 +128,11 @@ int main(int argc, char **argv) {
                for (i = 0; i < 8; i++) {
 
 
-                if((buf[j] & (0x80 >> i))>0){
+		    if((buf[j] & (0x80 >> i))>0){
 			printf("1");
-		}else{
+		    }else{
 			printf("0");
-		}
-
+		    }
 
                     setDS((buf[j] & (0x80 >> i))>0);
                     usleep(interval);
@@ -146,7 +145,7 @@ int main(int argc, char **argv) {
                 }
 		printf(" ");
             }
-		printf("\n");
+	    printf("\n");
 
             usleep(interval);
             setST(1);
